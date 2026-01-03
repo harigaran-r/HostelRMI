@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Utility Dashboard</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --bg: #f8f9fa;
+            --text: #2b2d42;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #fdfdfd;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+            text-align: left;
+            min-height: 80px;
+            position: relative;
+        }
+
+        .info-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0e7ff;
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <h1>Hostel Connect</h1>
+    <p class="subtitle">Access records for 100 students (Rooms 01-010)</p>
+    
+    <div class="search-box">
+        <input type="number" id="roomNum" placeholder="Enter Room Number" min="1" max="50">
+    </div>
+    
+    <button onclick="searchRoom()">Fetch Details</button>
+
+    <div id="result">
+        <div style="color: #999; text-align: center;">Enter a room number to begin</div>
+    </div>
+
+    <div class="footer-note">
+        Distributed Systems RMI Service • In-Memory Data
+    </div>
+</div>
+
+<script>
+    function searchRoom() {
+        const num = document.getElementById('roomNum').value;
+        const resultDiv = document.getElementById('result');
+        
+        if(!num || num < 1 || num > 50) {
+            resultDiv.innerHTML = "<span style='color: #e63946;'>Please enter a valid room number (1-50).</span>";
+            return;
+        }
+
+        resultDiv.innerHTML = "<div style='text-align:center;'>Searching...</div>";
+
+        fetch('/search?room=' + num)
+            .then(res => res.text())
+            .then(data => {
+                resultDiv.innerHTML = `
+                    <div class="info-tag">SYSTEM VERIFIED</div>
+                    ${data}
+                `;
+            })
+            .catch(err => {
+                resultDiv.innerHTML = "Error connecting to server.";
+            });
+    }
+
+    // Allow 'Enter' key to trigger search
+    document.getElementById('roomNum').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchRoom();
+        }
+    });
+</script>
+
+</body>
+</html>
